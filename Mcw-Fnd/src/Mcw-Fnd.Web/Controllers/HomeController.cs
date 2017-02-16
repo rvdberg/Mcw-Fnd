@@ -2,29 +2,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Mcw_Fnd.Services;
+using Mcw_Fnd.Services.Fnd;
+using Mcw_Fnd.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mcw_Fnd.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IRealEstateAgentService realEstateAgentService;
+
+        public HomeController(IRealEstateAgentService realEstateAgentService)
+        {
+            this.realEstateAgentService = realEstateAgentService;
+        }
+
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult About()
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
+        public async Task<IActionResult> Agents()
         {
-            ViewData["Message"] = "Your application description page.";
+            var agents = await realEstateAgentService.GetRealEstateAgentsForCityAsync("Amsterdam");
+            var vm = new AgentsViewModel(agents);
 
-            return View();
+            return View(vm);
         }
 
-        public IActionResult Contact()
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any)]
+        public async Task<IActionResult> GardenAgents()
         {
-            ViewData["Message"] = "Your contact page.";
+            var gardenAgents = await realEstateAgentService.GetRealEstateAgentsForCityWithGardenAsync("Amsterdam");
+            var vm = new GardenAgentsViewModel(gardenAgents);
 
-            return View();
+            return View(vm);
         }
 
         public IActionResult Error()

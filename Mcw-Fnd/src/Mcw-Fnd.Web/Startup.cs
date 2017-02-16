@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Mcw_Fnd.Services;
+using Mcw_Fnd.Services.Fnd;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -41,12 +43,16 @@ namespace Mcw_Fnd.Web
             services.AddLogging();
             services.AddMvc();
 
+            services.Configure<FndApiOptions>(Configuration.GetSection("FndApi"));
+
             container.Configure(c =>
             {
                 c.Scan(s =>
                 {
+                    s.AssemblyContainingType<Startup>();
+                    s.AssemblyContainingType<IRealEstateAgentService>();
+                    s.AssemblyContainingType<IFndService>();
                     s.WithDefaultConventions();
-                    s.TheCallingAssembly();
                     s.LookForRegistries();
                 });
             });
